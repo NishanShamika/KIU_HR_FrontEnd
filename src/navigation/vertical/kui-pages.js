@@ -93,6 +93,9 @@ export default [
     icon: 'FileIcon',
   },
   {
+    header: 'Settings',
+  },
+  {
     title: 'Add Emp Leaves',
     route: 'apps-leaves-add-employees',
     icon: 'FilePlusIcon',

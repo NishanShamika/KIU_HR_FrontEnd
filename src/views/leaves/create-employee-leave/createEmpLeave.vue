@@ -152,7 +152,6 @@
                 </validation-provider>
               </b-form-group>
             </b-col>
-            
             <!-- Task  Description -->
             <!-- submit and reset button -->
             <b-col cols="12">
@@ -433,6 +432,8 @@ export default {
     },
 
     
+
+    
   // addAllEmployees(name) {
   //  if (name == "ALL"){
   //     this.getUserList = this.userList;
@@ -456,9 +457,7 @@ export default {
       // when the modal has hidden
       this.$refs['my-modal'].toggle('#toggle-btn')
     },
-    addTask() {
-      this.a = true;
-    },
+
     handleOk(bvModalEvt) {
       console.log(bvModalEvt)
       // Prevent modal from closing
@@ -474,20 +473,6 @@ export default {
       this.$nextTick(() => {
         this.$refs['my-modal'].toggle('#toggle-btn')
       })
-    },
-    repeateAgain() {
-      this.addEmployeePopupActive = true;
-      this.items.push({
-        id: this.nextTodoId += this.nextTodoId,
-      })
-
-      this.$nextTick(() => {
-        this.trAddHeight(this.$refs.row[0].offsetHeight)
-      })
-    },
-    removeItem(index) {
-      this.items.splice(index, 1)
-      this.trTrimHeight(this.$refs.row[0].offsetHeight)
     },
 
     makeToast(msg, variant) {
@@ -530,9 +515,12 @@ export default {
     try {
       const response = await leaveAPI.createNewLeaveType(payload);
       console.log(response.data.code);
-      if (response.data.code === 201) {
+      if (response.data.code === 403) {
         this.makeToast(response.data.msg, 'danger');
-      } else {
+      } else if (response.data.code === 400) {
+        this.makeToast(response.data.msg,'danger'); // Clear the input field by setting it to an empty string
+      }else {
+        this.makeToast(response.data.msg,'success');
         this.$bvModal.hide('modal-lg');
         await this.getLeaveTypeList();
         this.$router.push(`/apps/leaves/addLeave`);
@@ -542,7 +530,7 @@ export default {
       console.log(this.error);
     }
   },
-    async submit() {
+  async submit() {
       if (this.getUserList.id == 0){
         const empIds = this.userList.map(emp => emp.id);
       const payload = {
@@ -553,16 +541,29 @@ export default {
       }
       await leaveAPI.addEmployeeLeaves(payload)
           .then((response) => {
-            console.log(response.data.code)
-            if (response.data.code == 201){
+            this.boxOne = ''
+              this.$bvModal.msgBoxConfirm('Are you sure?' ,{
+              okTitle: 'YES', 
+              cancelTitle: 'NO'
+              })
+          .then(value => {
+            this.boxOne = value
+            if (this.boxOne==true) {
+              console.log(response.data.code)
+            if (response.data.code == 400){
               this.makeToast(response.data.msg, 'danger');
             }
             else {
 
-              this.$router.push(`/apps/leaves`)
+              this.resetForm();
+              //this.$router.go()
+              this.makeToast(response.data.msg,'success');
             }
-            // toast("Order removed successfully", "success");
-            //this.$router.go(-1)
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
           })
           .catch(({response}) => {
             this.error = response.data.error
@@ -577,18 +578,31 @@ export default {
               availableLeaves: this.label,
             }
             await leaveAPI.addEmployeeLeaves(payload)
-                .then((response) => {
-                  console.log(response.data.code)
-                  if (response.data.code == 201){
-                    this.makeToast(response.data.msg, 'danger');
-                  }
-                  else {
+            .then((response) => {
+            this.boxOne = ''
+              this.$bvModal.msgBoxConfirm('Are you sure?',{
+              okTitle: 'YES', 
+              cancelTitle: 'NO'
+              })
+          .then(value => {
+            this.boxOne = value
+            if (this.boxOne==true) {
+              console.log(response.data.code)
+            if (response.data.code == 400){
+              this.makeToast(response.data.msg, 'danger');
+            }
+            else {
 
-                    this.$router.push(`/apps/leaves`)
-                  }
-                  // toast("Order removed successfully", "success");
-                  //this.$router.go(-1)
-                })
+              this.resetForm();
+              //this.$router.go()
+              this.makeToast(response.data.msg,'success');
+            }
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          })
                 .catch(({response}) => {
                   this.error = response.data.error
                   console.log(this.error)
