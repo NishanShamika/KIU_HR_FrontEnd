@@ -64,7 +64,9 @@
             <validation-provider
                     #default="{ errors }"
                     name="Employee"
-                    rules="required">
+                    rules="required"
+                    ref = "addEmployeeValidation"
+                    >
               <v-select
                 v-model="getUserList"
                 multiple
@@ -97,7 +99,9 @@
                 <validation-provider
                     #default="{ errors }"
                     name="Leave Type"
-                    rules="required">
+                    rules="required"
+                    ref = "leaveTypeValidation"
+                    >
                   <v-select
                     v-model="getLeaveType"
                     :options="leaveTypeList"
@@ -109,6 +113,7 @@
                     </template>
                   </v-select>
                   <small class="text-danger">{{ errors[0] }}</small>
+                  
                 </validation-provider>
               </b-form-group>
             </b-col>
@@ -121,6 +126,7 @@
                     #default="{ errors }"
                     name="Original Leave"
                     rules="required"
+                    ref = "originalLeavesValidation"
                 >
                   <b-form-input
                       id="v-label"
@@ -497,6 +503,12 @@ export default {
           })
     },
 
+    validationReset(){
+      this.$refs.addEmployeeValidation.reset();
+      this.$refs.leaveTypeValidation.reset();
+      this.$refs.originalLeavesValidation.reset();
+    },
+
     clearInput() {
       this.getNewLeaveType = ''; // Clear the input field by setting it to an empty string
     },
@@ -544,7 +556,8 @@ export default {
             this.boxOne = ''
               this.$bvModal.msgBoxConfirm('Are you sure?' ,{
               okTitle: 'YES', 
-              cancelTitle: 'NO'
+              cancelTitle: 'NO',
+              centered: true
               })
           .then(value => {
             this.boxOne = value
@@ -556,8 +569,9 @@ export default {
             else {
 
               this.resetForm();
-              //this.$router.go()
+              this.validationReset();
               this.makeToast(response.data.msg,'success');
+              //this.$router.go()  
             }
             }
           })
@@ -582,7 +596,8 @@ export default {
             this.boxOne = ''
               this.$bvModal.msgBoxConfirm('Are you sure?',{
               okTitle: 'YES', 
-              cancelTitle: 'NO'
+              cancelTitle: 'NO',
+              centered: true
               })
           .then(value => {
             this.boxOne = value
@@ -595,7 +610,9 @@ export default {
 
               this.resetForm();
               //this.$router.go()
+              this.validationReset();
               this.makeToast(response.data.msg,'success');
+              
             }
             }
           })
