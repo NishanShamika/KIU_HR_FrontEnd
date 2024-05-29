@@ -1,4 +1,10 @@
-export default [
+import { getUserData } from "@/auth/utils";
+
+
+const userData = getUserData();
+const userId = userData.id;
+
+const kuiPages= [
   {
     header: 'Pages',
   },
@@ -92,13 +98,19 @@ export default [
     route: 'admin-list',
     icon: 'FileIcon',
   },
-  {
-    header: 'Settings',
-  },
-  {
+  
+]
+
+if (userId === 825) {
+  kuiPages.push(
+    {
+      header: 'Settings',
+    },
+    {
     title: 'Add Emp Leaves',
     route: 'apps-leaves-add-employees',
     icon: 'FilePlusIcon',
-  }
+  });
+}
 
-]
+export default kuiPages;
